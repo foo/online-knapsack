@@ -47,7 +47,7 @@
 \newcommand{\OPT}{\textsc{Opt}\xspace}
 \newcommand{\DET}{\textsc{Det}\xspace}
 
-\newcommand\maciek[1]{\todo[inline]{Maciek: #1}}
+\newcommand\maciek[1]{\texthl{#1}}
 
 \nolinenumbers
 
@@ -210,11 +210,11 @@ chooses a~non-decreasing threshold function $\f: [0,1] \to [1/2,1]$ and ensures
 that the size of the $i$-th accepted large item is at least $\f(i/n)$. While an
 actual definition of $\f$ is given later, to grasp a~general idea, it is worth
 looking at its plot in \cref{fig:def-fpq} (left). A natural adversarial strategy
-is to give large items meeting these thresholds, and once \ALG fills $k$ bins,
+is to give large items meeting these thresholds, and once \ALG fills $k$ bins, \maciek{to}
 present $n$ items of sizes slightly smaller than the next threshold
 $\f((k+1)/n)$. These items will be rejected by \ALG but can be accepted by \OPT.
 Analyzing this strategy and ensuring that the ratio is at least~$\R$ for any
-choice of $k$ yields boundary conditions. Analyzing these conditions for 
+choice of $k$ yields \maciek{the} boundary conditions. Analyzing these conditions for 
 $n$~tending to infinity, we obtain a differential equation, whose solution is the
 function $\f$ used in our algorithm.
 
