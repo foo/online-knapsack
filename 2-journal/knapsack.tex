@@ -598,6 +598,7 @@ items from $L$ in the order they were accepted by \ALG. The size of the $i$-th
 large item is at least the threshold $f(i/n)$. Hence, by
 \cref{lem:F-properties}, $\gain(L) \geq (1/n) \cdot \sum_{i=1}^{|L|} f(i/n)
 \eqsim \fintegral(|L|/n) = \fintegral(\B(\LG))$.
+\todo{Additionally claim that $\fintegral(\B(\LG)) = \fintegral(\B(\LT))$}
 
 To show the second part, we fix any $x \geq \f(\B(\LG))$ and for each large item
 of size greater than~$x$ we reduce its size to~$x$. The total gain of the
@@ -612,6 +613,8 @@ $\fintegral(\B(\LG))$. Summing up yields $\gain(\LG) \gtrsim
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{When RTA terminates with some empty bins}
+
+\todo{terminates to terminated? czas dokonany}
 
 \begin{lemma}
 \label{lem:empty}
@@ -642,7 +645,7 @@ By \cref{lem:large-gain},
     \ALG(\sigma) 
     & = \gain(\LG) + \gain(N) 
     \gtrsim \fintegral(\B(\LG)) + \gain(\LG^{\geq x}) - x \cdot \B(\LG^{\geq x}) + \gain(N) \\
-    & \eqsim R \cdot x + \gain(\LG^{\geq x}) - x \cdot \B(\LG^{\geq x}) + \gain(N).
+    & \eqsim R \cdot x + \gain(\LG^{\geq x}) - x \cdot \B(\LG^{\geq x}) + \gain(N),
 \end{align*}  
 where for the last relation we used $\fintegral(\B(\LG)) \eqsim \fintegral(\f^{-1}(x)) = \R \cdot x$ 
 (by \cref{lem:F-properties}).
