@@ -685,13 +685,13 @@ therefore the competitive ratio is at most $R - O(1/n)$ also in this case.
 \label{sec:medium}
 
 
-In the remaining part of the analysis, we make use of the following functions.
+In the remaining part of the analysis, we \st{make use of} \maciek{use} the following functions.
 For any $c \in (1/2, 1]$, let $\cutintegral(c) = \int_0^1 \min \{ \f(y), c \}\,
 \dd y$ and $\water(c) = \int_0^1 \max \{ c - \f(y), 0 \}\, \dd y$. Both
 functions are increasing and depicted in \cref{fig:def-fpq} (right).
 As we show below (cf.~the last property of \cref{lem:PQ-properties}),
 $\cutintegral(c)$ lower-bounds the gain of \ALG in the case when
-its load on non-\LT bins is at least $c$.
+its load on non-\LT bins is at least $c$\todo{only when all buckets are full}.
 
 \begin{lemma}
 \label{lem:PQ-properties}
