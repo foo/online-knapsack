@@ -5,6 +5,7 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \usepackage{xspace}
+\usepackage{todonotes}
 
 \newtheorem{fact}[theorem]{Fact}
 \crefname{enumi}{Property}{Properties}
@@ -45,6 +46,8 @@
 \newcommand{\ALG}{\textsc{Rta}\xspace}
 \newcommand{\OPT}{\textsc{Opt}\xspace}
 \newcommand{\DET}{\textsc{Det}\xspace}
+
+\newcommand\maciek[1]{\todo[inline]{Maciek: #1}}
 
 \nolinenumbers
 
@@ -191,7 +194,7 @@ online algorithm in random order.
 
 Our algorithm splits items into three categories: large (of size greater than
 $1/2$), medium (of size from the interval $[\smallBoundary, 1/2]$) and small (of size
-smaller than $\smallBoundary$). We defer the actual definition of $\smallBoundary$. 
+smaller than $\smallBoundary$). We defer the actual definition of $\smallBoundary$ \maciek{and for now we note that it is approximately $0.21$}. 
 
 First, we explain what an online algorithm should do when it faces a stream of
 large items. Note that no two large items can fit together in a single bin. If
