@@ -1520,6 +1520,236 @@ Hence $G_7(x) \geq \R$ for $x \in [1/3,1/2]$ follows by \cref{item:g-2dim-2}.
 \end{description}
 \end{proof}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Upper bound}
+\label{sec:upper}
+
+To show the optimality of \ALG, we prove that the competitive ratio of any
+deterministic algorithm for the multiple knapsack problem is at most $\R -
+O(1/n)$. This shows that the term $O(1/n)$ occurring in the competitive
+ratio of our deterministic algorithm $\ALG$ is inevitable.
+
+Our adversarial strategy is parameterized with a non-decreasing sequence of $n +
+1$ numbers~$s(i)$, such that $1/2 < s(1) \leq s(2) \leq s(3) \leq \ldots \leq
+s(n) \leq s(n+1) = 1$ and proceeds in at most $n+1$ phases numbered from $1$. In
+phase $i$, the adversary issues $n$ items, all of size $s(i)$, and stops
+immediately once \DET accepts one of these items (places it into a~bin). If all
+$n$ items of a phase are rejected by \DET, the adversary finishes the input
+sequence. 
+
+Let $j$ be the number of phases where $\DET$ accepts an item. As the size of
+each item from the input is strictly greater than $1/2$, at most one item fits
+in a single bin, and thus $j \leq n$. Then, total load of \DET is equal to
+$\DET(j) = \sum_{i = 1}^{j} s(i)$. Note that in the final phase $j+1$, $n$ items
+of size $s(j+1)$ are presented (but rejected by \DET). \OPT may accept all of
+them obtaining the total load $n \cdot s(j+1)$. By comparing these two gains and
+as $\DET$ may choose the value of $j$, we get that the competitive ratio of
+$\DET$ is at most
+\begin{equation}
+\label{eq:upper-bound-ratio}
+U := \max_{0 \leq j \leq n} \frac{\DET(j) / n}{\OPT(j) / n} = 
+  \max_{0 \leq j \leq n} \frac{ (1/n) \cdot \sum_{i = 1}^{j} s(i)}{s(j+1)}.
+\end{equation}
+
+It remains to choose an appropriate sequence $s$ and compute $U$ using \eqref{eq:upper-bound-ratio}. 
+As a warm-up, we show a simple
+construction leading to a weaker upper bound of $\R$, which we later refine to
+obtain the bound of $\R - O(1/n)$. We note that the bound of $\R$ given by Cygan
+et al.~\cite{CyJeSg16} uses concepts similar to ours, although in their
+construction, the adversary tries to control the number of bins that store
+particular amounts of items, while our approach is more fine-grained, and the
+adversary controls the contents of particular bins. 
+
+For our both bounds we use the following sequence $s$ with the function $\f$
+defined in \eqref{eq:f-definition}, parameter $\alpha$ that we define later and
+infinitesimally small but positive $\epsilon$. 
+\begin{equation}
+  \label{eq:ultimate_s}
+    s(i) = \begin{cases}
+      \f \left( \frac{i-1}{n} + \alpha \right) + \epsilon 
+        & \text{if $i \in \{ 1, \ldots, n \}$}, \\
+      1 & \text{if $i = n+1$}.
+    \end{cases}
+\end{equation}
+The role of $\epsilon$ is to ensure that $s(i) > 1/2$ for all $i$. 
+We will neglect the load caused by $\epsilon$ in our proofs below;
+such approach could be formalized by taking $\epsilon = c/n^2$
+with a constant $c$ tending to zero.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Upper bound of R}
+
+\begin{lemma}
+\label{lem:upper-bound-weak}
+The competitive ratio of any deterministic algorithm \DET for the multiple
+knapsack problem is at most $\R$.
+\end{lemma}
+
+\begin{proof}
+The adversary uses the strategy described above
+with sequence $s$ defined by \eqref{eq:ultimate_s} parameterized
+with $\alpha = 0$.
+We fix any $j \in \{0, \ldots, n\}$ and observe that $s(j+1) \geq \f(j/n)$ 
+(for $j = n$ we use $\f(1) = 1$).
+By \eqref{eq:upper-bound-ratio}, \eqref{eq:Ff} and \cref{lem:F-properties}, the competitive ratio of \DET is 
+upper-bounded by 
+\[
+  U = \frac{ \sum_{i = 1}^{j} s(i)/n }{s(j+1)}
+  = \frac{ \frac{1}{n} \cdot \sum_{i = 1}^{j} \f \left( \frac{i-1}{n} \right)}
+    {s(j+1)}
+  \leq \frac{ \int_0^{j/n} \f (x) \, \dd x }{s(j+1)}
+  \leq \frac{\fintegral(j/n)}{\f(j/n)}
+  \leq \R.
+\qedhere
+\]
+\end{proof}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Upper bound of R - O(1/n)}
+
+By choosing parameter $\alpha = 1/(8n)$, 
+we may improve the upper bound by a term of $\Theta(1/n)$.
+As in the proof of \cref{lem:upper-bound-weak}, 
+we approximate the sum of $s(i)$'s by an appropriate integral, but 
+this time we also bound the error due to such approximation.
+
+\begin{lemma}
+\label{lem:upper-bound-technical}
+For the sequence $s$ defined in \eqref{eq:ultimate_s} parameterized
+with $\alpha = 1/(8n)$, and for any $j \in \{0,\ldots,n\}$,
+it holds that 
+$\sum_{i=1}^j s(i)/n \leq \fintegral(j/n)$.
+Moreover, for $n \geq 3$, it holds that 
+$\sum_{i=1}^n s(i)/n \leq \fintegral(1) - 1/(52 n)$.
+\end{lemma}
+
+\begin{proof}
+Note that $\sum_{i = 1}^j s(i)/n
+= \sum_{i = 0}^{j-1} s(i+1) / n
+ = \sum_{i = 0}^{j-1} \frac{1}{n} \cdot f(i/n+\alpha )$.
+On the other hand, 
+$F(j/n) = \int_0^{j/n} f(x) \,\dd x = \sum_{i = 0}^{j-1} \int_{0}^{1/n} \f(i/n + x) \,\dd x$.
+Therefore, $F(j/n) - \sum_{i = 1}^j s(i)/n = \sum_{i=0}^{j-1} D_i$, where 
+\begin{equation}
+\label{eq:def_D}
+  D_i = \int_{0}^{1/n} \f\left( i/n + x \right) 
+      - \f\left( i/n + \alpha \right) \,\dd x .
+\end{equation}
+Now we estimate $D_i$. We consider two cases.
+\begin{enumerate}
+\item  $i/n + \alpha < \R$. Then, $f(i/n+\alpha) = 1/2$ and 
+$\f(i/n+x) \geq 1/2$ for any $x \in [0,1/n]$. Substituting these bounds 
+to \eqref{eq:def_D} yields $D_i \geq 0$. 
+
+\item $i/n + \alpha \geq R$.
+In this case, $\f(i/n + \alpha) = (2 \e)^{i/n + \alpha - 1}$ and 
+$\f(i/n + x) \geq (2 \e)^{i/n + x - 1}$ for any $x \in [0,1/n]$.
+Thus, 
+\begin{align*}
+    D_i 
+      & \geq \int_{0}^{1/n} (2 \e)^{i/n + x - 1} - (2 \e)^{i/n + \alpha - 1} \,\dd x 
+       = (2 \e)^{i/n - 1} \cdot 
+        \int_{0}^{1/n} (2 \e)^x - (2 \e)^\alpha \,\dd x .
+\end{align*}
+%
+By the Taylor expansion of function $(2\e)^x$,
+for any $\beta \in [0,\R]$ it holds that
+$1 + \beta/R \leq (2 \e)^\beta \leq 1 + 2 \cdot \beta/\R$. Thus, 
+%
+\begin{align*}
+    D_i & \geq (2 \e)^{i/n - 1} \cdot 
+        \int_{0}^{1/n} \frac{x}{\R} - \frac{2 \alpha}{\R} \,\dd x 
+      \geq (2 \e)^{i/n - 1} \cdot \left( \frac{1/n^2}{2 \R} - \frac{2 \alpha / n}{\R} \right) \\
+      & \geq \frac{1}{2 \e} \cdot \frac{1}{4 \R \cdot n^2} 
+      > \frac{1}{13 \cdot n^2}.
+\end{align*}
+As $D_i \geq 0$ in either case, we immediately get the first part
+of the lemma. 
+To show the second part, we set $j = n$ and 
+observe that all integers $i \in \{\lceil n \cdot \R \rceil, \ldots, j-1\}$ 
+are considered in the second case above.
+Therefore $F(1) - \sum_{i=1}^n s(i)/n = \sum_{i=0}^{n-1} D_i \geq 
+(n-\lceil n \cdot R \rceil)/ (13 \cdot n^2)$. 
+For $n \geq 3$, it holds that $n-\lceil n \cdot R \rceil \geq n/4$, which
+concludes the proof.
+\qedhere
+\end{enumerate}
+\end{proof}
+
+
+
+\begin{theorem}
+\label{thm:upper-bound}
+The competitive ratio of any deterministic algorithm \DET for the multiple knapsack problem 
+is at most $\R - 1/(52 n)$.
+\end{theorem}
+
+\begin{proof}
+The adversary uses the strategy described above
+with sequence $s$ defined by \eqref{eq:ultimate_s} parameterized
+with $\alpha = 1/(8n)$. We compute the upper bound $U$ on the competitive ratio
+of \DET using \eqref{eq:upper-bound-ratio}.
+
+We separately consider the case of small value of $n$.
+If $n = 1$, then $s(1) = 1/2$ and $s(2) = 1$, and therefore 
+$U = 1/2$. If $n = 2$, then $s(1) = s(2) = 1/2$ and $s(3) = 1$,
+and thus again $U = 1/2$. In these cases, $U = 1/2 < R - 1/(52n)$, and 
+the theorem follows. 
+
+Below, we assume that $n \geq 3$.
+We fix any $j \in \{0, \ldots, n\}$ and let $y = j/n$.
+We consider two cases. 
+
+\begin{enumerate}
+\item $j < n$. 
+Then, by \cref{lem:upper-bound-technical}, $\sum_{i=1}^j s(i)/n \leq \fintegral(y)$. 
+Additionally, $s(j+1) = \f(y+\alpha) + \epsilon > \f(y + \alpha)$. 
+Using \cref{lem:F-properties}, we obtain
+\begin{equation}
+\label{eq:ub-1}
+U = \frac{ (1/n) \cdot \sum_{i = 1}^{j} s(i)}{s(j+1)}
+  < \frac{\fintegral(y)}{\f(y + \alpha)} 
+  = \frac{\fintegral(y)}{\f(y)} \cdot \frac{\f(y)}{\f(y + \alpha)} 
+  = \min\{y, \R\} \cdot \frac{\f(y)}{\f(y + \alpha)}.
+\end{equation}
+It suffices to show that $U \leq R - \alpha/2 = R - 1/(16n)$. 
+\begin{enumerate}
+\item If $y < \R - \alpha/2$, then $U < y \cdot 1 < \R - \alpha/2$.
+\item If $y \geq \R - \alpha/2$, then we upper-bound the fraction
+$\f(y) \,/\, \f(y + \alpha)$. As $y + \alpha/2 \geq \R$,
+\begin{equation}
+\label{eq:ub-2}
+  \frac{\f(y)}{\f(y+\alpha)} 
+  \leq \frac{\f(y+\alpha/2)}{\f(y+\alpha)} 
+  = \frac{(2\e)^{y+\alpha/2-1}}{(2\e)^{y+\alpha-1}} 
+  = (2\e)^{-\alpha/2}
+  \leq 1-\frac{\alpha}{2\R}.
+\end{equation}
+In the last inequality, we used the Taylor expansion of the function $(2\e)^x$.
+Combining \eqref{eq:ub-1} with \eqref{eq:ub-2} yields 
+$U \leq R - \alpha/2$ as desired.
+\end{enumerate}
+
+\item $j = n$.
+By \cref{lem:upper-bound-technical}, 
+$\sum_{i=1}^n s(i)/n \leq R - 1/(52n)$ and $s(n+1) = 1$.
+Therefore, in this case, $U \leq R - 1/(52n)$.
+\qedhere
+\end{enumerate}
+\end{proof}
+
+\section{Conclusions}
+
+\maciek{FIXME}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
