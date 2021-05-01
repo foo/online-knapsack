@@ -214,17 +214,17 @@ is to give large items meeting these thresholds, and once \ALG fills $k$ bins, \
 present $n$ items of sizes slightly smaller than the next threshold
 $\f((k+1)/n)$. These items will be rejected by \ALG but can be accepted by \OPT.
 Analyzing this strategy and ensuring that the ratio is at least~$\R$ for any
-choice of $k$ yields \maciek{the} boundary conditions. Analyzing these conditions for 
+choice of $k$ yields boundary conditions. Analyzing these conditions for 
 $n$~tending to infinity, we obtain a differential equation, whose solution is the
 function $\f$ used in our algorithm.
 
 The actual difficulty, however, is posed by medium items. \ALG never proactively
-rejects them and it keeps a subset of \emph{marked} medium items in their own
+rejects them, and it keeps a subset of \emph{marked} medium items in their own
 bins (one item per one bin), while it stacks the remaining, non-marked ones
 (places them together in the same bin, possibly combining items of similar
 sizes). This strategy allows \ALG to combine a large item with marked medium
 items later. However, the amount of marked items has to be carefully managed as
-they do not contribute large gain alone. A typical approach would be to
+they \st{do not} contribute \st{large} \maciek{little}\todo{large can be confusing with large items} gain alone. A typical approach would be to
 partition medium items into discrete sub-classes, control the number of items in
 each class, and analyze the gain on the basis of the \emph{minimal} size item in
 a particular subclass. To achieve optimal competitive ratio, we however need a
@@ -248,10 +248,16 @@ items.
 
 \subsection{Preliminaries}
 
-We have $n$ bins of capacity $1$, numbered from $1$ to $n$. An input is a stream
+\subparagraph*{\maciek{Model revisited.}} We have $n$ bins of capacity $1$, numbered from $1$ to $n$. An input is a stream
 of items from $(0, 1]$, defined by their sizes. Upon seeing an item, an online
 algorithm has to either reject it or place it in an arbitrary bin without
-violating the bin's capacity. The \emph{load} of a~bin $b$, denoted $\load(b)$,
+violating the bin's capacity.
+\medskip
+
+\maciek{Comment: Very little from the paragraph below is used in algorithm's definition (only load). Move to the analysis (the algorithm is complicated now, and having a lot of notation right before it adds to its heaviness)}
+
+
+The \emph{load} of a~bin $b$, denoted $\load(b)$,
 is the sum of item sizes stored in bin $b$. We define the load of a set of items
 as the sum of their sizes and the total load as the load of all items collected
 by an algorithm. Additionally, for any $x \leq 1/2$, we define 
@@ -347,10 +353,10 @@ where we define
 We further arrange medium items into subcategories $\MTI{2}$, $\MTI{3}$ and
 $\MTI{4}$: a medium item belongs to $\MTI{i}$ if its size is from range
 $(1/(i+1), 1/i]$. As we partition only medium items this way, $\MTI{4}$~contains
-items of sizes from $[\smallBoundary, 1/4]$. Note that at most $i$ items of
+\maciek{only} items of sizes from $[\smallBoundary, 1/4]$. Note that at most $i$ items of
 category~$\MTI{i}$ fit in a single bin. 
 
-At some times (defined precisely later) a group of small items of a total load
+\st{At some times} \maciek{Under certain conditions} (defined precisely later) a group of small items of a total load
 from $[\smallBoundary, 2 \smallBoundary)$ stored in a single bin may
 become \emph{merged}, and from that point is treated as a~single medium item. We
 ensure that such merging action does not violate invariants of our algorithm.
@@ -474,6 +480,72 @@ medium marked item. If the resulting medium item can be marked
 and included in~$D$ without violating its $\g$-dominance, 
 \ALG relabels the \A-bin to \M and treats its contents as a single marked medium
 item from now on. Otherwise, it simply changes the label of the \A-bin to \ST.
+
+
+\medskip
+
+The pseudocode of our algorithm \ALG for handling a single incoming item is presented in \cref{alg:rta}.
+The right margin shows label transitions of affected bins. 
+
+\begin{algorithm}[hbtp]
+  \caption{\ALG pseudocode for handling an item $x$}\label{alg:rta}
+  \begin{algorithmic}[0]
+  \If {$x$ is large}
+     \If {$x \geq \f(\B(\LG) + 1/n)$}
+        \If {\M-bin $b$ with $x$ space left exists}
+           \State put $x$ in $b$ \Comment $\M \to \LT$
+        \Else
+           \State put $x$ in an empty bin \Comment $\emptyBucket \to \LT$
+        \EndIf
+     \Else
+        \State reject $x$
+     \EndIf
+  \EndIf
+
+  \Statex
+  \If {$x$ is medium}
+     \State Let $i \in \{2,3,4\}$ be such that $x \in [1/(i+1),1/i)$
+     \If {\LT-bin $b$ with $x$ space left exists}
+        \State put $x$ in $b$ \Comment $\LT \to \LT$
+     \ElsIf {$D \cup \{x\}$ is \g-dominated}
+        \State $D \gets D \cup \{x\}$ \Comment mark $x$
+        \State put $x$ in an empty bin \Comment $\emptyBucket \to \M$
+     \ElsIf {$\MTI{i}$-bin $b$ with $x$ space left exists}
+        \State put $x$ in $b$ \Comment $\MTI{i} \to \MTI{i}$
+     \Else 
+        \State put $x$ in an empty bin \Comment $\emptyBucket \to \MTI{i}$
+     \EndIf
+  \EndIf
+ 
+  \Statex
+  \If {$x$ is small}
+     \If {\LT-bin $b$ with $x$ space left exists}
+        \State put $x$ in $b$ \Comment $\LT \to \LT$
+     \ElsIf {an \ST-bin $b$ with $x$ space left exists}
+        \State put $x$ in $b$ \Comment $\ST  \to \ST$
+     \ElsIf {an \A-bin $b$ exists}
+        \State put $x$ in $b$ \Comment $\A \to \A$
+        \If {$\load(b) \geq \smallBoundary$}
+           \If {$D \cup \{\load(b)\}$ is $\g$-dominated}
+              \State merge all items from $b$ into medium item $y$ of size $\load(b)$ 
+              \State $D \gets D \cup \{ y \}$ 
+                 \Comment mark $y$, $\A \to \M$  
+           \Else 
+              \State relabel $b$ to \ST \Comment $\A \to \ST$
+           \EndIf
+        \EndIf
+     \Else
+        \State put $x$ in an empty bin \Comment $\emptyBucket \to \A$
+     \EndIf
+  \EndIf
+  
+  \Statex
+  \If {there are no empty bins left}
+  \State terminate
+  \EndIf
+\end{algorithmic}
+\end{algorithm}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
